@@ -127,7 +127,9 @@ The output is a tab-delimited text file with the following columns:
 * PAMScore, SeedScore, OnTargetScore, OffTargetScore, GCScore: components of the final GUARD score
 * Score: final GUARD score
 
-## Additional Genomes
+## Genomes
+Before you can run the tool you will need to generate some genome-related files and indexes.
+
 To create an off-target index for a genome `$genome` for PAM `$pam`:
 
 ```
