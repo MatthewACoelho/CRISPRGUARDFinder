@@ -4,10 +4,10 @@ Given an on-target CRISPR guide this tool will identify all its off-targets and 
 
 The tool incorporates and off-target search based on the one used in the Sanger WGE website [2, 3] enhanced with the calculation of the probability of the off-target [4]. R is used to identify and score the guard designs, and the whole is coordinated by a nextflow script.
 
-[1] Coehlo et all, in preparation
-[2] [WGE: a CRISPR database for genome engineering.  - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/25979474)
-[3] [WTSI Genome Editing](https://www.sanger.ac.uk/htgt/wge/)
-[4] [Repurposing CRISPR as an RNA-guided platform for sequence-specific control of gene expression.  - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/23452860)
+1. Coehlo et all, in preparation
+2. [WGE: a CRISPR database for genome engineering.  - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/25979474)
+3. [WTSI Genome Editing](https://www.sanger.ac.uk/htgt/wge/)
+4. [Repurposing CRISPR as an RNA-guided platform for sequence-specific control of gene expression.  - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/23452860)
 
 ## Installation
 Create a new directory for the installation which I will denote `$guard_root`  in what follows.
@@ -62,7 +62,7 @@ params {
 	/* On-target guide sequence without PAM */
 	guide = "GACCCCCTCCACCCCGCCTC"
 
-  /* On-target guide location if there is > 1 with 0 mismatches */
+	/* On-target guide location if there is > 1 with 0 mismatches */
 	chr = ""        /* chr4 for example */
 	start = ""
 	end = ""
@@ -125,7 +125,7 @@ The output is a tab-delimited text file with the following columns:
 * X0, X1, X2, X3: number of genomic hits of the GUARD with 0, 1, 2, 3 mismatches.
 * OnTargetHit, OnTargetMismatches, OnTargetSeedMismatches: sequence of the potential on-target hit of the GUARD
 * PAMScore, SeedScore, OnTargetScore, OffTargetScore, GCScore: components of the final GUARD score
-	* Score: final GUARD score
+* Score: final GUARD score
 
 ## Additional Genomes
 To create an off-target index for a genome `$genome` for PAM `$pam`:
