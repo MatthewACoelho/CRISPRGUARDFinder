@@ -17,7 +17,7 @@ Clone out the GitHub repo:
 ```
 cd $guard_root
 
-github clone https://github.com/MatthewACoelho/GUARDfinder.git
+git clone https://github.com/MatthewACoelho/GUARDfinder.git
 ```
 
 The pipeline requires R with `optparse`  and `BSgenome` packages for each of the genomes required, and `nextflow`. One way to get these if you don’t already have them is using `conda`:
