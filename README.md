@@ -4,7 +4,7 @@ Given an on-target CRISPR guide this tool will identify all its off-targets and 
 
 The tool incorporates and off-target search based on the one used in the Sanger WGE website [2, 3] enhanced with the calculation of the probability of the off-target [4]. R is used to identify and score the guard designs, and the whole is coordinated by a nextflow script.
 
-1. Coehlo et al., in preparation
+1. Coehlo et all, in preparation
 2. [WGE: a CRISPR database for genome engineering.  - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/25979474)
 3. [WTSI Genome Editing](https://www.sanger.ac.uk/htgt/wge/)
 4. [Repurposing CRISPR as an RNA-guided platform for sequence-specific control of gene expression.  - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/23452860)
@@ -42,6 +42,47 @@ gcc -mcmodel=medium -O4 -o bin/ot -pthread src/ot.c
 ```
 
 All that remains is to edit `activate.sh` to set the `guard_root` to the full path of the one you have created.
+
+## Genomes
+The genome-related files and indexes are too large to include here, so before you can run the tool you will need to generate them.
+
+Download the genome fasta file and GTF from Ensembl for each organism in which you are interested. For example Human:
+
+```
+curl http://ftp.ensembl.org/pub/current_fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.toplevel.fa.gz > $guard_root/data/hg38.fa.gz
+curl http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.96.chr.gtf.gz > $guard_root/data/hg38.gtf.gz
+```
+
+and Mouse:
+
+```
+curl http://ftp.ensembl.org/pub/current_fasta/mus_musculus/dna/Mus_musculus.GRCm38.dna.toplevel.fa.gz > $guard_root/data/mm10.fa.gz
+curl http://ftp.ensembl.org/pub/current_gtf/mus_musculus/Mus_musculus.GRCm38.96.gtf.gz > $guard_root/data/mm10.gtf.gz
+```
+
+To create an off-target index for a genome `$genome` for PAM `$pam`:
+
+```
+mkdir -p $guard_root/data/$genome/$pam
+gunzip $guard_root/data/$genome.fa.gz
+$guard_root/bin/ot index -out $guard_root/data/$genome/$pam -pam $pam $guard_root/data/$genome.fa
+```
+
+You can remove some of the indexes to reduce noise in the results, we normally only keep the major chromosome indexes:
+
+```
+rm $guard_root/data/$genome/$pam/chrCHR*
+rm $guard_root/data/$genome/$pam/chrGL*
+rm $guard_root/data/$genome/$pam/chrK*
+```
+
+To convert an Ensembl GTF into the format required by the off-target search (which requires perl):
+
+```
+mkdir -p $guard_root/data/$genome/info
+gunzip $guard_root/data/$genome.gtf.gz
+$guard_root/bin/process_gtf.pl $guard_root/data/$genome/info < $guard_root/data/$genome.gtf
+```
 
 ## Usage
 Activate the environment, if required:
@@ -126,23 +167,6 @@ The output is a tab-delimited text file with the following columns:
 * OnTargetHit, OnTargetMismatches, OnTargetSeedMismatches: sequence of the potential on-target hit of the GUARD
 * PAMScore, SeedScore, OnTargetScore, OffTargetScore, GCScore: components of the final GUARD score
 * Score: final GUARD score
-
-## Genomes
-Before you can run the tool you will need to generate some genome-related files and indexes.
-
-To create an off-target index for a genome `$genome` for PAM `$pam`:
-
-```
-mkdir $guard_root/$genome/$pam
-$guard_root/bin/ot index -out $guard_root/data/$genome/$pam -pam $pam $genome.fa
-```
-
-And to convert an Ensembl GTF into the format required by the off-target search (which requires perl):
-
-```
-mkdir $guard_root/$genome/info
-$guard_root/bin/process_gtf.pl $guard_root/data/$genome/info < $genome.gtf
-```
 
 ## License
 The code is freely available under the [MIT license](http://www.opensource.org/licenses/mit-license.html) .
