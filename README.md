@@ -157,9 +157,9 @@ The output is a tab-delimited text file with the following columns:
 * GuardGC: GC content of the GUARD
 * ForwardGuardPAM: GUARD PAM on the GUARD strand
 * ForwardGuardWithPAM: GUARD with PAM on the GUARD strand
-* OffGuideOverlap, OffGuideSeedOverlap, OffGuidePAMOverlap: number of bases the GUARD overlaps with the off-target guide_seed region_PAM
-* OffGuide: sequence of the off-target guide
-* OffGuideGC: GC content of the off-target guide
+* OffGuideOverlap, OffGuideSeedOverlap, OffGuidePAMOverlap: number of bases the GUARD overlaps with the off-target gRNA seed region and PAM
+* OffGuide: sequence of the off-target region
+* OffGuideGC: GC content of the off-target region
 * pCoding, nCoding: p-value and number of off-targets of the GUARD hitting coding (CDS) regions
 * pNonCoding, nNonCoding: p-value and number of off-targets of the GUARD hitting non-coding regions
 * nBadSeed: number of off-targets for the GUARD where the seed region is identical to the on-target
