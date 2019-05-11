@@ -47,7 +47,7 @@ process find_guards {
 		Rscript \$guard_root/bin/find_guards.R -n \
 			--id ${params.id} \
 			--genome ${params.genome}\
-			--guard_length ${params.guard_length} \
+			--guard_len ${params.guard_length} \
 			--guard_mismatches ${params.guard_mismatches} \
 			--crrna ${params.guide} \
 			--chr "${params.chr}" \
@@ -100,7 +100,7 @@ process score_guards {
 		Rscript \$guard_root/bin/find_guards.R \
 			--id ${params.id} \
 			--genome ${params.genome} \
-			--guard_length ${params.guard_length} \
+			--guard_len ${params.guard_length} \
 			--guard_mismatches ${params.guard_mismatches} \
 			--crrna ${params.guide} \
 			--chr "${params.chr}" \
