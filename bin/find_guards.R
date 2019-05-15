@@ -232,7 +232,8 @@ function(options, on_coord, off_coord)
 	off_guards = off_guards[, !(colnames(off_guards) %in% c('Query', 'QueryNo', 'QuerySize'))]
 
 	on_hits = unique(off_guards_ot_hits[ off_guards_ot_hits$Chr == on_coord$chr &
-					 !(off_guards_ot_hits$End < on_coord$start | on_coord$end < off_guards_ot_hits$Start)
+					 # !(off_guards_ot_hits$End < on_coord$start | on_coord$end < off_guards_ot_hits$Start) # partial overlap
+					 (on_coord$start <= off_guards_ot_hits$Start & off_guards_ot_hits$End <= on_coord$end) # total overlap
 					, c("QuerySeq", "HitSeq", "HitMismatches", "SeedMismatches") ])
 	colnames(on_hits) = c("Guard", "OnTargetHit", "OnTargetMismatches", "OnTargetSeedMismatches")
 	off_guards = merge(off_guards, on_hits, by="Guard", all=TRUE)
@@ -283,14 +284,14 @@ function(options, on_coord, off_coords)
 		return (guards)
 	}
 
-	guards$PAMScore = ifelse(guards$OffGuidePAMOverlap > 0, 1, 0)
-	guards$SeedScore = ifelse(guards$OffGuideSeedOverlap > 0, 1, 0)
+	#guards$PAMScore = ifelse(guards$OffGuidePAMOverlap > 0, 1, 0)
+	#guards$SeedScore = ifelse(guards$OffGuideSeedOverlap > 0, 1, 0)
+	guards$PAMAndSeedScore = ifelse(guards$OffGuidePAMOverlap > 0 | guards$OffGuideSeedOverlap > 0, 1, 0)
 	guards$OnTargetScore = ifelse(is.na(guards$OnTargetHit), 1, 0)
 	guards$OffTargetScore = (100*(guards$X0-1) + 10*guards$X1 + guards$X2)/10000
 	guards$GCScore = (guards$GuardGC - guards$OffGuideGC) / guards$GuardGC
 
-	guards$Score = guards$PAMScore +
-				   guards$SeedScore +
+	guards$Score = guards$PAMAndSeedScore +
 				   guards$OnTargetScore -
 				   guards$OffTargetScore +
 				   guards$GCScore
@@ -314,7 +315,7 @@ function(options, id="G", on_coord=NULL, on_guide=NULL, guides_file="guide.txt")
 
 	if (is.null(on_coord))
 	{
-		exact_hits = ot_hits[ ot_hits$HitMismatches == 0, , drop=FALSE]
+		exact_hits = unique(ot_hits[ ot_hits$HitMismatches == 0, c("Chr", "Start", "End", "Strand"), drop=FALSE])
 		if (nrow(exact_hits) == 1)
 		{
 			hit = exact_hits[1,]
@@ -322,7 +323,12 @@ function(options, id="G", on_coord=NULL, on_guide=NULL, guides_file="guide.txt")
 		}
 		else if (nrow(exact_hits) > 1)
 		{
-			message("Too many exact hits for ", on_guide)
+			message("Too many (", nrow(exact_hits), ") exact hits for ", on_guide, ":")
+			for(i in 1:nrow(exact_hits))
+			{
+				hit = exact_hits[i, ]
+				message("    ", i, ". chr=\"", hit$Chr, "\" start=", hit$Start, " end=", hit$End, " strand=\"", hit$Strand, "\"")
+			}
 			return ()
 		}
 		else if (nrow(exact_hits) == 0)
@@ -338,7 +344,7 @@ function(options, id="G", on_coord=NULL, on_guide=NULL, guides_file="guide.txt")
 	# Remove OTs based on min p-value
 	ot_hits = ot_hits[ ot_hits$pOffTarget >= options$crrna_min_pvalue &
 					   ot_hits$HitMismatches <= options$crrna_mismatches,, drop=FALSE ]
-	message("FIltered off-targets: ", nrow(ot_hits))
+	message("Filtered off-targets: ", nrow(ot_hits))
 
 	if (nrow(ot_hits) == 0)
 	{
