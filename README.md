@@ -126,6 +126,9 @@ params {
 
 	/* Mismatches for the guard off-target search */
 	guard_mismatches = 3
+
+  /* Maximum distance from a designed guard to its off-target guide */
+  max_guard_distance = 10
 }
 ```
 
