@@ -173,7 +173,8 @@ function(options, coord)
 	options$chr = coord$chr
 	options$strand = coord$strand
 	options$region = c(coord$start, coord$end)
-	options$target_region = c(coord$start-options$guard_len+1, coord$end+options$guard_len-1)
+	options$target_region = c(coord$start-options$guard_len-options$max_guard_distance+1,
+							  coord$end+options$guard_len+options$max_guard_distance-1)
 
 	if (coord$strand == '+')
 	{
@@ -391,6 +392,8 @@ function()
 					help="Guard length (default %$default)"),
 		make_option(c("--guard_mismatches"), action="store", default=3, type='integer',
 					help="Guard mismatches (default %$default)"),
+		make_option(c("--max_guard_distance"), action="store", default=0, type='integer',
+					help="Maximum distance from a guard to its off-target (default %$default)"),
 		make_option(c("--seed_len"), action="store", default=12, type='integer',
 					help="Seed length (default %$default)"),
 		make_option(c("--out_dir"), action="store", default=".", type='character',

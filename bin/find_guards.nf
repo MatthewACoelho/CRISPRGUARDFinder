@@ -13,6 +13,7 @@ params.chr = ""
 params.start = ""
 params.end = ""
 params.strand = ""
+params.max_guard_distance = 0
 
 process find_guide_off_targets {
 
@@ -49,6 +50,7 @@ process find_guards {
 			--genome ${params.genome}\
 			--guard_len ${params.guard_length} \
 			--guard_mismatches ${params.guard_mismatches} \
+			--max_guard_distance ${params.max_guard_distance} \
 			--crrna ${params.guide} \
 			--chr "${params.chr}" \
 			--start "${params.start}" \
@@ -102,6 +104,7 @@ process score_guards {
 			--genome ${params.genome} \
 			--guard_len ${params.guard_length} \
 			--guard_mismatches ${params.guard_mismatches} \
+			--max_guard_distance ${params.max_guard_distance} \
 			--crrna ${params.guide} \
 			--chr "${params.chr}" \
 			--start "${params.start}" \
