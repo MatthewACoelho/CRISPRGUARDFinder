@@ -784,7 +784,7 @@ t.test(mean_strand_TRUE$X.Indels.Cas9, mean_strand_FALSE$X.Indels.Cas9, var.equa
 ```{r Cas9 strand plot}
 # Cas9 strand plot
 
-plot_Cas9_Strand <- ggplot(subset(data_clean_Cas9_split, NT =="FALSE"), aes(x=SameStrand, y=X.Indels.BE)) +
+plot_Cas9_Strand <- ggplot(subset(data_clean_Cas9_split, NT =="FALSE"), aes(x=SameStrand, y=X.Indels.Cas9)) +
 geom_boxplot() + labs(title= "Cas9: GUARD RNA Strand", x="GUARD RNA Same Strand as gRNA", y="Indels (%)") +
 annotate("text", x = 1.5, y = 20, label = c("P= 0.009491")) +
 annotate("segment", x = 1.1, xend = 1.9, y = 19.4, yend = 19.4, alpha = 0.7) +
