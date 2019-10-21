@@ -1,6 +1,6 @@
 # CRISPR GUARD Finder
 ## Introduction
-Given an on-target CRISPR guide this tool will identify all its off-targets and design “GUARD” sequences (short guides) to interfere with the off-target activity. This is the code referred to in Coehlo et al [1].
+Given an on-target CRISPR guide this tool will identify all its off-targets and design “GUARD” sequences (short guides) to interfere with the off-target activity. This is the code referred to in Coelho et al [1].
 
 The tool incorporates and off-target search based on the one used in the Sanger WGE website [2, 3] enhanced with the calculation of the probability of the off-target [4]. R is used to identify and score the guard designs, and the whole is coordinated by a nextflow script.
 
