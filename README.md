@@ -1,10 +1,10 @@
 # CRISPR GUARD Finder
 ## Introduction
-Given an on-target CRISPR guide this tool will identify all its off-targets and design “GUARD” sequences (short guides) to interfere with the off-target activity. This is the code referred to in Coelho et al [1].
+Given an on-target CRISPR guide this tool will identify all its off-targets and design “GUARD” sequences (short guides) to interfere with the off-target activity. This is the code referred to in Coehlo et al [1].
 
 The tool incorporates and off-target search based on the one used in the Sanger WGE website [2, 3] enhanced with the calculation of the probability of the off-target [4]. R is used to identify and score the guard designs, and the whole is coordinated by a nextflow script.
 
-1. Coelho et al., in preparation
+1. Coehlo et all, in preparation
 2. [WGE: a CRISPR database for genome engineering.  - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/25979474)
 3. [WTSI Genome Editing](https://www.sanger.ac.uk/htgt/wge/)
 4. [Repurposing CRISPR as an RNA-guided platform for sequence-specific control of gene expression.  - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/23452860)
@@ -163,13 +163,14 @@ The output is a tab-delimited text file with the following columns:
 * OffGuideOverlap, OffGuideSeedOverlap, OffGuidePAMOverlap: number of bases the GUARD overlaps with the off-target guide_seed region_PAM
 * OffGuide: sequence of the off-target guide
 * OffGuideGC: GC content of the off-target guide
+* OffGuideStrand: Strand of the off-target guide
+* GuardToOffGuidePAMDistance: base distance between the guard and off-target guide PAMs
 * pCoding, nCoding: p-value and number of off-targets of the GUARD hitting coding (CDS) regions
 * pNonCoding, nNonCoding: p-value and number of off-targets of the GUARD hitting non-coding regions
 * nBadSeed: number of off-targets for the GUARD where the seed region is identical to the on-target
 * X0, X1, X2, X3: number of genomic hits of the GUARD with 0, 1, 2, 3 mismatches.
 * OnTargetHit, OnTargetMismatches, OnTargetSeedMismatches: sequence of the potential on-target hit of the GUARD
 * PAMAndSeedScore, OnTargetScore, OffTargetScore, GCScore: components of the final GUARD score
-* Score: final GUARD score
 
 ## License
 The code is freely available under the [MIT license](http://www.opensource.org/licenses/mit-license.html) .
