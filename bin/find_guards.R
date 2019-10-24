@@ -40,6 +40,36 @@ function(pam)
 	return ('right')
 }
 
+pam_region =
+function(pam, coord)
+{
+	pam_len = nchar(pam)
+	side = pam_side(pam);
+	if ((side == "left" && coord$strand == "+") || (side == "right" && coord$strand == "-"))
+	{
+		return (c(coord$start, coord$start+pam_len-1))
+	}
+	else if ((side == "left" && coord$strand == "-") || (side == "right" && coord$strand == "+"))
+	{
+		return (c(coord$end-pam_len+1, coord$end))
+	}
+}
+
+seed_region =
+function(pam, seed_len, coord)
+{
+	pam_len = nchar(pam)
+	side = pam_side(pam);
+	if ((side == "left" && coord$strand == "+") || (side == "right" && coord$strand == "-"))
+	{
+		return (c(coord$start+pam_len, coord$start+pam_len+seed_len-1))
+	}
+	else if ((side == "left" && coord$strand == "-") || (side == "right" && coord$strand == "+"))
+	{
+		return (c(coord$end-pam_len-seed_len+1, coord$end-pam_len))
+	}
+}
+
 pam_extend_grna =
 function(pam, len, pam_seq, strand)
 {
@@ -84,6 +114,20 @@ function(region_a, region_b)
 		return (0)
 	}
 	return (min(region_a[2], region_b[2])-max(region_a[1], region_b[1])+1)
+}
+
+calc_distance =
+function(region_a, region_b)
+{
+	if (region_a[1] > region_b[2])
+	{
+		return (region_a[1] - region_b[2])
+	}
+	if (region_a[2] < region_b[1])
+	{
+		return (region_b[1] - region_a[2])
+	}
+	return (0)
 }
 
 calc_gc_content =
@@ -133,6 +177,8 @@ function(options, sequence, guard_strand="+")
 		guard_region = c(start(guard_view[i])+options$target_region[1]-1,
 						 end(guard_view[i])+options$target_region[1]-1)
 
+		guard_pam_region = pam_region(options$pam, list(strand=guard_strand, start=guard_region[1], end=guard_region[2]))
+
 		row = c(ID=options$id,
 				GuardChr=options$chr,
 				GuardStart=guard_region[1],
@@ -143,10 +189,12 @@ function(options, sequence, guard_strand="+")
 				ForwardGuardPAM=forward_pam,
 				ForwardGuardWithPAM=forward_guard_with_pam,
 				OffGuideOverlap=calc_overlap(options$region, guard_region),
-				OffGuideSeedOverlap=calc_overlap(options$seed_region, guard_region),
-				OffGuidePAMOverlap=calc_overlap(options$pam_region, guard_region),
+				OffGuideSeedOverlap=calc_overlap(options$off_guide_seed_region, guard_region),
+				OffGuidePAMOverlap=calc_overlap(options$off_guide_pam_region, guard_region),
 				OffGuide=options$off_guide,
 				OffGuideGC=options$off_guide_gc,
+				OffGuideStrand=options$off_coord$strand,
+				GuardToOffGuidePAMDistance=calc_distance(options$off_guide_pam_region, guard_pam_region),
 				Guard=forward_guard)
 		hits = rbind(hits, row)
 	}
@@ -176,18 +224,8 @@ function(options, coord)
 	options$target_region = c(coord$start-options$guard_len-options$max_guard_distance+1,
 							  coord$end+options$guard_len+options$max_guard_distance-1)
 
-	if (coord$strand == '+')
-	{
-		pam_start = coord$end-options$pam_len+1
-		options$pam_region = c(pam_start, pam_start+options$pam_len-1)
-		options$seed_region = c(pam_start-options$seed_len, pam_start-1)
-	}
-	else
-	{
-		pam_end = coord$start+options$pam_len-1
-		options$pam_region = c(coord$start, pam_end)
-		options$seed_region = c(pam_end+1, pam_end+options$seed_len)
-	}
+	options$off_guide_pam_region = pam_region(options$pam, coord)
+	options$off_guide_seed_region = seed_region(options$pam, options$seed_len, coord)
 
 	seqs = Views(options$genome_seq[[coord$chr]], options$target_region[1], options$target_region[2])
 	return (find_guards_in_seqs(options, seqs))
@@ -277,6 +315,7 @@ function(options, on_coord, off_coords)
 	{
 		options$off_guide = get_guide(options, off_coord)
 		options$off_guide_gc = calc_gc_content(mask_mismatches(options$off_guide, options$on_guide))
+		options$off_coord = off_coord
 		guards = rbind(guards, find_guards(options, on_coord, off_coord))
 	}
 
@@ -291,11 +330,6 @@ function(options, on_coord, off_coords)
 	guards$OnTargetScore = ifelse(is.na(guards$OnTargetHit), 1, 0)
 	guards$OffTargetScore = (100*(guards$X0-1) + 10*guards$X1 + guards$X2)/10000
 	guards$GCScore = (guards$GuardGC - guards$OffGuideGC) / guards$GuardGC
-
-	guards$Score = guards$PAMAndSeedScore +
-				   guards$OnTargetScore -
-				   guards$OffTargetScore +
-				   guards$GCScore
 
 	write.table(guards, file=paste0(options$out_dir, "/", on_coord$id, "_final.txt"), sep="\t", row.names=FALSE, quote=FALSE)
 	return (guards)
@@ -341,7 +375,12 @@ function(options, id="G", on_coord=NULL, on_guide=NULL, guides_file="guide.txt")
 
 	message("All off-targets: ", nrow(ot_hits))
 	# Remove on-target
-	ot_hits = ot_hits[ ot_hits$HitMismatches > 0,, drop=FALSE ]
+	on_target =
+		ot_hits$Chr == on_coord$chr &
+		ot_hits$Start == on_coord$start &
+		ot_hits$End == on_coord$end &
+		ot_hits$Strand == on_coord$strand
+	ot_hits = ot_hits[ which(!on_target),, drop=FALSE ]
 	# Remove OTs based on min p-value
 	ot_hits = ot_hits[ ot_hits$pOffTarget >= options$crrna_min_pvalue &
 					   ot_hits$HitMismatches <= options$crrna_mismatches,, drop=FALSE ]
