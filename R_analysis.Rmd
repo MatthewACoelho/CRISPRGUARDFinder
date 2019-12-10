@@ -22,11 +22,6 @@ date: "12/6/2019"
 output: html_document
 ---
 
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 # data wrangling with tidyverse
 
 ```{r add NGS data to the dataframe of GUARD sequences and parameters}
@@ -1183,28 +1178,65 @@ plot_NGG_HiFiCas9
 
 ```
 
-```{r NGG BE stats}
-# NGG BE stats
+```{r}
+# OffGuideOverlap functional vs non-functional Cas9
+#stats
 
-a <- data_clean_BE_split %>% group_by(Functional, NGG) %>% select(NGG, Functional)
-fisher.test(table(a))
+mean_nonfunctional <- data_clean_Cas9_split %>% group_by(Functional) %>% filter(Functional == "FALSE")
+mean_functional <- data_clean_Cas9_split %>% group_by(Functional) %>% filter(Functional == "TRUE")
 
-```
-
-```{r NGG BE plot}
-# NGG BE plot
-
-plot_NGG_BE <- ggplot(data_clean_BE_split, aes(x=NGG, fill = Functional)) +
-geom_bar(stat="count", position = "fill") + labs(title= "BE: PAM", x="NGG PAM", y="Proportion of GUARDs") +
-annotate("text", x = 1.5, y = 0.95, label = c("P = NS")) +
-annotate("segment", x = 1.1, xend = 1.9, y = 0.92, yend = 0.92, alpha = 0.7) +
-theme(axis.text.x = element_text(size = rel(1.2)))
-plot_NGG_BE
+t.test(mean_nonfunctional$OffGuidePAMOverlap, mean_functional$OffGuidePAMOverlap, var.equal = TRUE)
 
 ```
 
-```{r OffGuideOverlap functioal vs non-functional Cas9 stats}
-# OffGuideOverlap functioal vs non-functional Cas9 stats
+```{r}
+#plot Cas9 OffGuideOverlap
+
+plot_PAMOverlap_Cas9 <- ggplot(subset(data_clean_Cas9_split, NT == "FALSE"), aes(x= Functional, y=OffGuidePAMOverlap)) +
+geom_boxplot(colour = "Red") + 
+theme_bw() +
+geom_jitter(alpha=0.1, size = 2, width = 0.2) +
+labs(title= "Cas9: PAM overlap", x=NULL, y="Overlap (bp)") +
+annotate("text", x = 1.5, y = 20, label = c("P = 1.282 x 10-5")) +
+annotate("segment", x = 1.1, xend = 1.9, y = 19.5, yend = 19.5, alpha = 0.7) +
+scale_x_discrete(labels=c("FALSE" = "Non-functional \n GUARD RNAs", "TRUE" = "Functional \n GUARD RNAs")) +
+theme(axis.text.x = element_text(size = rel(1.2)))+
+ylim(0,20)
+plot_PAMOverlap_Cas9
+
+```
+
+```{r}
+# OffGuideOverlap functioal vs non-functional Cas9
+#stats
+
+mean_nonfunctional <- data_clean_Cas9_split %>% group_by(Functional) %>% filter(Functional == "FALSE")
+mean_functional <- data_clean_Cas9_split %>% group_by(Functional) %>% filter(Functional == "TRUE")
+
+t.test(mean_nonfunctional$OffGuideSeedOverlap, mean_functional$OffGuideSeedOverlap, var.equal = TRUE)
+
+```
+
+```{r}
+#plot Cas9 OffGuideOverlap
+
+plot_OffGuideSeedOverlap_Cas9 <- ggplot(subset(data_clean_Cas9_split, NT == "FALSE"), aes(x= Functional, y=OffGuideSeedOverlap)) +
+geom_boxplot(colour = "Red") + 
+theme_bw() +
+geom_jitter(alpha=0.1, size = 2, width = 0.2) +
+labs(title= "Cas9: Seed region overlap", x=NULL, y="Overlap (bp)") +
+annotate("text", x = 1.5, y = 20, label = c("P = 0.009682")) +
+annotate("segment", x = 1.1, xend = 1.9, y = 19.5, yend = 19.5, alpha = 0.7)+
+scale_x_discrete(labels=c("FALSE" = "Non-functional \n GUARD RNAs", "TRUE" = "Functional \n GUARD RNAs")) +
+theme(axis.text.x = element_text(size = rel(1.2)))+
+ylim(0, 20)
+plot_OffGuideSeedOverlap_Cas9
+
+```
+
+```{r}
+# OffGuideOverlap functioal vs non-functional Cas9
+#stats
 
 mean_nonfunctional <- data_clean_Cas9_split %>% group_by(Functional) %>% filter(Functional == "FALSE")
 mean_functional <- data_clean_Cas9_split %>% group_by(Functional) %>% filter(Functional == "TRUE")
@@ -1213,38 +1245,104 @@ t.test(mean_nonfunctional$OffGuideOverlap, mean_functional$OffGuideOverlap, var.
 
 ```
 
-```{r plot Cas9 OffGuideOverlap}
-# plot Cas9 OffGuideOverlap
+```{r}
+#plot Cas9 OffGuideOverlap
 
 plot_OffGuideOverlap_Cas9 <- ggplot(subset(data_clean_Cas9_split, NT == "FALSE"), aes(x= Functional, y=OffGuideOverlap)) +
-geom_boxplot() + labs(title= "Cas9: GUARD Position", x=NULL, y="Overlap with gRNA (bp)") +
+geom_boxplot(colour = "Red") + 
+theme_bw() +
+geom_jitter(alpha=0.1, size =2, width = 0.2) +
+labs(title= "Cas9: gRNA overlap", x=NULL, y="Overlap (bp)") +
 annotate("text", x = 1.5, y = 20, label = c("P = 0.04083")) +
-annotate("segment", x = 1.1, xend = 1.9, y = 19.5, yend = 19.5, alpha = 0.7)+
+annotate("segment", x = 1.1, xend = 1.9, y = 19.5, yend = 19.5, alpha = 0.7) +
 scale_x_discrete(labels=c("FALSE" = "Non-functional \n GUARD RNAs", "TRUE" = "Functional \n GUARD RNAs")) +
-theme(axis.text.x = element_text(size = rel(1.2)))
+theme(axis.text.x = element_text(size = rel(1.2))) +
+ylim(0, 20)
 plot_OffGuideOverlap_Cas9
 
 ```
 
-```{r OffGuideOverlap functioal vs non-functional HiFiCas9 stats}
-# OffGuideOverlap functioal vs non-functional HiFiCas9 stats
+```{r}
+# OffGuideOverlap functional vs non-functional HiFiCas9
+#stats
 
-mean_notperfect <- data_clean_HiFiCas9_split %>% group_by(Perfect) %>% filter(Perfect == "FALSE")
-mean_perfect <- data_clean_HiFiCas9_split %>% group_by(Perfect) %>% filter(Perfect == "TRUE")
+mean_nonfunctionalHiFi <- data_clean_HiFiCas9_split %>% group_by(Perfect) %>% filter(Perfect == "FALSE")
+mean_functionalHiFi <- data_clean_HiFiCas9_split %>% group_by(Perfect) %>% filter(Perfect == "TRUE")
 
-t.test(mean_notperfect$OffGuideOverlap, mean_perfect$OffGuideOverlap, var.equal = TRUE)
+t.test(mean_nonfunctionalHiFi$OffGuidePAMOverlap, mean_functionalHiFi$OffGuidePAMOverlap, var.equal = TRUE)
 
 ```
 
-```{r plot HiFiCas9 OffGuideOverlap}
-# plot HiFiCas9 OffGuideOverlap
+```{r}
+#plot HiFiCas9 OffGuideOverlap
+
+plot_PAMOverlap_HiFiCas9 <- ggplot(subset(data_clean_HiFiCas9_split, NT == "FALSE"), aes(x= Perfect, y=OffGuidePAMOverlap)) +
+geom_boxplot(colour = "Red") + 
+theme_bw() +
+geom_jitter(alpha=0.1, size = 2, width = 0.2) +
+labs(title= "Cas9: PAM overlap", x=NULL, y="Overlap (bp)") +
+annotate("text", x = 1.5, y = 20, label = c("P = N.S")) +
+annotate("segment", x = 1.1, xend = 1.9, y = 19.5, yend = 19.5, alpha = 0.7) +
+scale_x_discrete(labels=c("FALSE" = "> 0.5 % Indels \n GUARD RNAs", "TRUE" = "< 0.5 % Indels \n GUARD RNAs")) +
+theme(axis.text.x = element_text(size = rel(1.2)))+
+ylim(0,20)
+plot_PAMOverlap_HiFiCas9
+
+```
+
+```{r}
+
+# OffGuideOverlap functioal vs non-functional HiFiCas9
+#stats
+
+mean_nonfunctionalHiFi <- data_clean_HiFiCas9_split %>% group_by(Perfect) %>% filter(Perfect == "FALSE")
+mean_functionalHiFi <- data_clean_HiFiCas9_split %>% group_by(Perfect) %>% filter(Perfect == "TRUE")
+
+t.test(mean_nonfunctionalHiFi$OffGuideSeedOverlap, mean_functionalHiFi$OffGuideSeedOverlap, var.equal = TRUE)
+
+```
+
+```{r}
+#plot HiFiCas9 OffGuideOverlap
+
+plot_OffGuideSeedOverlap_HiFiCas9 <- ggplot(subset(data_clean_HiFiCas9_split, NT == "FALSE"), aes(x= Perfect, y=OffGuideSeedOverlap)) +
+geom_boxplot(colour = "Red") + 
+theme_bw() +
+geom_jitter(alpha=0.1, size = 2, width = 0.2) +
+labs(title= "HiFi-Cas9: Seed region overlap", x=NULL, y="Overlap (bp)") +
+annotate("text", x = 1.5, y = 20, label = c("P = 0.0153")) +
+annotate("segment", x = 1.1, xend = 1.9, y = 19.5, yend = 19.5, alpha = 0.7)+
+scale_x_discrete(labels=c("FALSE" = ">0.5 % Indels \n GUARD RNAs", "TRUE" = "<0.5 % Indels \n GUARD RNAs")) +
+theme(axis.text.x = element_text(size = rel(1.2)))+
+ylim(0, 20)
+plot_OffGuideSeedOverlap_HiFiCas9
+
+```
+
+```{r}
+# OffGuideOverlap functioal vs non-functional HiFiCas9
+#stats
+
+mean_nonfunctionalHiFi <- data_clean_HiFiCas9_split %>% group_by(Perfect) %>% filter(Perfect == "FALSE")
+mean_functionalHiFi <- data_clean_HiFiCas9_split %>% group_by(Perfect) %>% filter(Perfect == "TRUE")
+
+t.test(mean_nonfunctionalHiFi$OffGuideOverlap, mean_functionalHiFi$OffGuideOverlap, var.equal = TRUE)
+
+```
+
+```{r}
+#plot HiFiCas9 OffGuideOverlap
 
 plot_OffGuideOverlap_HiFiCas9 <- ggplot(subset(data_clean_HiFiCas9_split, NT == "FALSE"), aes(x= Perfect, y=OffGuideOverlap)) +
-geom_boxplot() + labs(title= "HiFi-Cas9: GUARD Position", x=NULL, y="Overlap with gRNA (bp)") +
+geom_boxplot(colour = "Red") + 
+theme_bw() +
+geom_jitter(alpha=0.1, size =2, width = 0.2) +
+labs(title= "HiFi-Cas9: gRNA overlap", x=NULL, y="Overlap (bp)") +
 annotate("text", x = 1.5, y = 20, label = c("P = 0.01983")) +
-annotate("segment", x = 1.1, xend = 1.9, y = 19.5, yend = 19.5, alpha = 0.7)+
-scale_x_discrete(labels=c("FALSE" = "> 0.5 % Indels \n GUARD RNAs", "TRUE" = "<0.5 % Indels \n GUARD RNAs")) +
-theme(axis.text.x = element_text(size = rel(1.2)))
+annotate("segment", x = 1.1, xend = 1.9, y = 19.5, yend = 19.5, alpha = 0.7) +
+scale_x_discrete(labels=c("FALSE" = ">0.5 % Indels \n GUARD RNAs", "TRUE" = "<0.5 % Indels \n GUARD RNAs")) +
+theme(axis.text.x = element_text(size = rel(1.2))) +
+ylim(0, 20)
 plot_OffGuideOverlap_HiFiCas9
 
 ```
