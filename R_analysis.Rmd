@@ -356,8 +356,8 @@ plot_reps_Cas9D
 #HiFiCas9
 #control
 
-HiFiC1 <- filter(data_clean_HiFiCas9, Condition == "Control1") %>% group_by(Number) %>% select(X.Indels.HiFiCas9, Number)
-HiFiC2 <- filter(data_clean_HiFiCas9, Condition == "Control2") %>% group_by(Number) %>% select(X.Indels.HiFiCas9, Number)
+HiFiC1 <- filter(data_clean_HiFiCas9, Condition == "Control1") %>% group_by(Number) %>% select(X.Indels.HiFiCas9, Number, ID, GUARDWithG)
+HiFiC2 <- filter(data_clean_HiFiCas9, Condition == "Control2") %>% group_by(Number) %>% select(X.Indels.HiFiCas9, Number, ID, GUARDWithG)
 join_HiFiC1_HiFiC2 <- left_join(HiFiC1, HiFiC2, by =c("Number"))
 
 summary(lm(join_HiFiC1_HiFiC2$X.Indels.HiFiCas9.x ~ join_HiFiC1_HiFiC2$X.Indels.HiFiCas9.y))
@@ -367,7 +367,7 @@ summary(lm(join_HiFiC1_HiFiC2$X.Indels.HiFiCas9.x ~ join_HiFiC1_HiFiC2$X.Indels.
 ```{r}
 
 plot_reps_HiFiCas9C <- ggplot(join_HiFiC1_HiFiC2, aes(x=X.Indels.HiFiCas9.x, y=X.Indels.HiFiCas9.y)) + 
-geom_jitter(size=3, alpha=0.8, width = 0.2, height = 0.2) + labs(title= ("HiFi-Cas9 \nAdj. R-squared: 0.5044"), x="Control replicate 1: Indels (%) \n n = 602", y="Control replicate 2: Indels (%) \n n = 600") + 
+geom_jitter(size=3, alpha=0.8, width = 0.2, height = 0.2) + labs(title= ("HiFi-Cas9 \nAdj. R-squared: 0.5044"), x="Control replicate 1: Indels (%) \n n = 567", y="Control replicate 2: Indels (%) \n n = 541") + 
 geom_smooth(method = lm) +
 ylim(0,100) + xlim(0,100)
 plot_reps_HiFiCas9C
@@ -377,8 +377,8 @@ plot_reps_HiFiCas9C
 ```{r}
 #dox
 
-HiFiD1 <- filter(data_clean_HiFiCas9, Condition == "Dox.1") %>% group_by(Number) %>% select(X.Indels.HiFiCas9, Number)
-HiFiD2 <- filter(data_clean_HiFiCas9, Condition == "Dox.2") %>% group_by(Number) %>% select(X.Indels.HiFiCas9, Number)
+HiFiD1 <- filter(data_clean_HiFiCas9, Condition == "Dox.1") %>% group_by(Number) %>% select(X.Indels.HiFiCas9, ID, Number)
+HiFiD2 <- filter(data_clean_HiFiCas9, Condition == "Dox.2") %>% group_by(Number) %>% select(X.Indels.HiFiCas9, ID, Number)
 join_HiFiD1_HiFiD2 <- left_join(HiFiD1, HiFiD2, by =c("Number"))
 
 summary(lm(join_HiFiD1_HiFiD2$X.Indels.HiFiCas9.x ~ join_HiFiD1_HiFiD2$X.Indels.HiFiCas9.y))
@@ -719,7 +719,7 @@ geom_boxplot(colour = "Red") +
   theme_bw() +
 geom_jitter(alpha=0.1, size = 2, width = 0.2) +
   labs(title= "HiFi-Cas9: Off-target Indels", y="Indels (%)", x=NULL) +
-annotate("text", x = 1.5, y = 20, label = c("N.S")) +
+annotate("text", x = 1.5, y = 20, label = c("0.9964")) +
 annotate("segment", x = 1.1, xend = 1.9, y = 19.4, yend = 19.4, alpha = 0.7) +
 coord_cartesian(ylim=c(0, 20)) +
 scale_x_discrete(labels=c("FALSE" = "GUARD RNAs", "TRUE" = "NT controls")) +
@@ -1077,7 +1077,8 @@ plot_NT_Cas9_Functional_subset <- ggplot(data_select_IDs_Cas9, aes(x=NT, y=X.Ind
 geom_jitter(size=1.5, alpha=0.8, width = 0.15, height = 0.1) + labs(title= "Cas9: Off-targets", x=NULL, y="Indels (%)") +
 facet_wrap(~ID, scales ='free', nrow=1) +
 scale_x_discrete(labels=c("FALSE" = "GUARD RNAs", "TRUE" = "NT controls"))+
-theme(axis.text.x = element_text(angle = 90))
+theme(axis.text.x = element_text(angle = 90)) +
+theme(axis.text.x = element_text(size = rel(1.2)))
 plot_NT_Cas9_Functional_subset
 
 ```
@@ -1104,7 +1105,8 @@ plot_NT_HiFiCas9_Functional_subset <- ggplot(data_select_IDs_HiFiCas9, aes(x=NT,
 geom_jitter(size=1.5, alpha=0.8, width = 0.15, height = 0.1) + labs(title= "HiFi-Cas9: Off-targets", x=NULL, y="Indels (%)") +
 facet_wrap(~ID, scales ='free', nrow=1) +
 scale_x_discrete(labels=c("FALSE" = "GUARD RNAs", "TRUE" = "NT controls"))+
-theme(axis.text.x = element_text(angle = 90))
+theme(axis.text.x = element_text(angle = 90)) +
+theme(axis.text.x = element_text(size = rel(1.2)))
 plot_NT_HiFiCas9_Functional_subset
 
 ```
@@ -1131,7 +1133,8 @@ plot_NT_BE_Functional_subset <- ggplot(data_select_IDs_BE, aes(x=NT, y=X.SNPs.BE
 geom_jitter(size=1.5, alpha=0.8, width = 0.15, height = 0.1) + labs(title= "BE: Off-targets", x=NULL, y="BE (%)") +
 facet_wrap(~ID, scales ='free', nrow=1) +
 scale_x_discrete(labels=c("FALSE" = "GUARD RNAs", "TRUE" = "NT controls"))+
-theme(axis.text.x = element_text(angle = 90))
+theme(axis.text.x = element_text(angle = 90)) +
+theme(axis.text.x = element_text(size = rel(1.2)))
 plot_NT_BE_Functional_subset
 
 ```
@@ -1280,7 +1283,7 @@ plot_PAMOverlap_HiFiCas9 <- ggplot(subset(data_clean_HiFiCas9_split, NT == "FALS
 geom_boxplot(colour = "Red") + 
 theme_bw() +
 geom_jitter(alpha=0.1, size = 2, width = 0.2) +
-labs(title= "Cas9: PAM overlap", x=NULL, y="Overlap (bp)") +
+labs(title= "HiFi-Cas9: PAM overlap", x=NULL, y="Overlap (bp)") +
 annotate("text", x = 1.5, y = 20, label = c("P = N.S")) +
 annotate("segment", x = 1.1, xend = 1.9, y = 19.5, yend = 19.5, alpha = 0.7) +
 scale_x_discrete(labels=c("FALSE" = "> 0.5 % Indels \n GUARD RNAs", "TRUE" = "< 0.5 % Indels \n GUARD RNAs")) +
@@ -1405,13 +1408,13 @@ count(n)
 
 # Cas9 Functional
 data_clean_HiFiCas9_split %>%
-group_by(Number, ID, Condition, Functional) %>%
+group_by(Number, ID, Condition, Functional, Perfect) %>%
 filter(Condition == "Dox.1" & NT == "FALSE") %>%
 tally() %>%
 count(n)
 
 data_clean_HiFiCas9_split %>%
-group_by(Number, ID, Condition, Guide, Functional, NT, mean_NT, X.Indels.Cas9) %>%
+group_by(Number, ID, Condition, Guide, Functional, NT, mean_NT, Perfect, X.Indels.HiFiCas9) %>%
 filter(Functional == "TRUE") %>%
 filter(Condition == "Dox.1"& NT == "FALSE") %>%
 tally() %>%
@@ -1420,22 +1423,22 @@ count(n)
 # Check the number of GUARDs that block editing to less than < 0.5 %
 
 data_clean_HiFiCas9_split %>%
-group_by(Number, ID, Condition, Guide, Functional, NT, mean_NT, X.Indels.HiFiCas9) %>%
+group_by(Number, ID, Condition, Guide, Functional, NT, mean_NT, Perfect, X.Indels.HiFiCas9) %>%
 #filter(Functional == "TRUE") %>%
 filter(Condition == "Dox.1" & NT == "FALSE") %>%
-filter(X.Indels.HiFiCas9 < 0.5) %>% 
+filter(Perfect == "TRUE") %>% 
 tally() %>%
 count(n)
 
 # HiFiCas9
 data_clean_HiFiCas9_split %>%
-group_by(Number, ID, Condition, Guide, Functional, NT, mean_NT, X.Indels.HiFiCas9) %>%
+group_by(Number, ID, Condition, Guide, Functional, NT, mean_NT, Perfect, X.Indels.HiFiCas9) %>%
 filter(Condition == "Dox.2" & NT == "FALSE") %>%
 tally() %>%
 count(n)
 
 data_clean_HiFiCas9_split %>%
-group_by(Number, ID, Condition, Guide, Functional, NT, mean_NT, X.Indels.HiFiCas9) %>%
+group_by(Number, ID, Condition, Guide, Functional, NT, mean_NT, Perfect, X.Indels.HiFiCas9) %>%
 filter(Functional == "TRUE") %>%
 filter(Condition == "Dox.2" & NT == "FALSE") %>%
 tally() %>%
@@ -1444,10 +1447,10 @@ count(n)
 # Check the number of GUARDs that block editing to less than < 0.5 %
 
 data_clean_HiFiCas9_split %>%
-group_by(Number, ID, Condition, Guide, Functional, NT, mean_NT, X.Indels.HiFiCas9) %>%
+group_by(Number, ID, Condition, Guide, Functional, NT, mean_NT, Perfect, X.Indels.HiFiCas9) %>%
 #filter(Functional == "TRUE") %>%
 filter(Condition == "Dox.2" & NT == "FALSE") %>%
-filter(X.Indels.HiFiCas9 < 0.5) %>% 
+filter(Perfect == "TRUE") %>% 
 tally() %>%
 count(n)
 
@@ -1541,14 +1544,16 @@ data_MFAP1_Cas9 <- data_clean_Cas9_split %>%
 filter(ID =="OT0011-MFAP1_EMX1 \n Mismatches =  4")
 
 plot_data_MFAP1_Cas9 <- ggplot(data_MFAP1_Cas9, aes(x=NT, y=X.Indels.Cas9, colour = Functional)) +
-geom_jitter(size=1.5, alpha=0.8, width = 0.1, height = 0.1) + labs(title= "Cas9: Off-targets", x=NULL, y="Indels (%)") +
+geom_jitter(size=1.5, alpha=0.8, width = 0.1, height = 0.1) + labs(title= "Cas9: Off-target", x=NULL, y="Indels (%)") +
 scale_x_discrete(labels=c("FALSE" = "GUARD RNAs", "TRUE" = "NT controls"))+
 facet_wrap(~ID, scales ='free_y')+
 theme(axis.text.x = element_text(angle = 90)) +
-geom_text_repel(aes(label=ifelse(GUARDWithG=="GTAGATGGTTGGGTAG", "GUARD v2", "")), nudge_y=0.2, nudge_x =0.2) +
-geom_text_repel(aes(label=ifelse(GUARDWithG=="GTAAGCAGAAGAAGAA", "GUARD v1", "")), nudge_y=0.2, nudge_x =0.2)
+geom_text_repel(aes(label=ifelse(GUARDWithG=="GTAGATGGTTGGGTAG", "GUARD v2", "")), nudge_y=0.5, nudge_x =0.3) +
+geom_text_repel(aes(label=ifelse(GUARDWithG=="GTAAGCAGAAGAAGAA", "GUARD v1", "")), nudge_y=0.5, nudge_x =0.3) +
+theme(axis.text.x = element_text(size = rel(1.2)))
 plot_data_MFAP1_Cas9
 
 ```
+
 
 ##################################################################################################################################################################################
