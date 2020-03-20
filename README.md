@@ -10,21 +10,21 @@ The tool incorporates and off-target search based on the one used in the Sanger 
 4. [Repurposing CRISPR as an RNA-guided platform for sequence-specific control of gene expression.  - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/23452860)
 
 ## Installation
-Create a new directory for the installation which I will denote `$guard_root`  in what follows.
+Create a new directory for the installation which I will denote `$guard_root` in what follows.
 
 Clone out the GitHub repo:
 
 ```
 cd $guard_root
 
-git clone https://github.com/MatthewACoelho/GUARDfinder.git
+git clone https://github.com/MatthewACoelho/GUARDfinder.git .
 ```
 
 The pipeline requires R with `optparse`  and `BSgenome` packages for each of the genomes required, and `nextflow`. One way to get these if you don’t already have them is using `conda`:
 
 ```
-conda create --prefix `pwd`/ext
-source activate `pwd`/ext
+conda create --prefix $guard_root/ext
+source activate $guard_root/ext
 
 conda install -c r r-base
 conda install -c bioconda bioconductor-bsgenome.hsapiens.ucsc.hg38
@@ -40,8 +40,6 @@ The off-target search is a C program requiring 64-bit architecture, which can be
 ```
 gcc -mcmodel=medium -O4 -o bin/ot -pthread src/ot.c
 ```
-
-All that remains is to edit `activate.sh` to set the `guard_root` to the full path of the one you have created.
 
 ## Genomes
 The genome-related files and indexes are too large to include here, so before you can run the tool you will need to generate them.
@@ -88,7 +86,7 @@ $guard_root/bin/process_gtf.pl $guard_root/data/$genome/info < $guard_root/data/
 Activate the environment, if required:
 
 ```
-source $guard_root/activate.sh
+source activate $guard_root/ext
 ```
 
 alternatively make sure an environment variable `guard_root` is set appropriately and R and nextflow are in your `PATH`.
