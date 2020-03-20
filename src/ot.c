@@ -4,7 +4,6 @@
 #include <pthread.h>
 #include <sys/stat.h>
 #include <string.h>
-#include <malloc.h>
 #include <unistd.h>
 #include <stdbool.h>
 
