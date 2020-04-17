@@ -1295,10 +1295,11 @@ void index_file(FILE *fp, char *out_dir, int max_size, pam_e pam)
 					/*
 					fprintf(stderr, "%d %20.20s %ld\n", pos+i+1, bits_to_string(u, max_size), u);
 					*/
-					if (pam_left(u >> (2*max_size), pam))
+					int seq_pos = pos+i-max_size-pam_size+2;
+					if (seq_pos > 0 && pam_left(u >> (2*max_size), pam))
 					{
 						/* fprintf(stderr, "L %d %26.26s %ld\n", pos+i-max_size-pam_size+2, bits_to_string(u, max_size+2*pam_size), u); */
-						seqs[nseqs].pos = pos+i-max_size-pam_size+2;
+						seqs[nseqs].pos = seq_pos;
 						seqs[nseqs].seq = u;
 						nseqs++;
 						tot_seqs++;
@@ -1308,10 +1309,10 @@ void index_file(FILE *fp, char *out_dir, int max_size, pam_e pam)
 							nseqs = 0;
 						}
 					}
-					if (pam_right(u, pam))
+					if (seq_pos > 0 && pam_right(u, pam))
 					{
 						/* fprintf(stderr, "R %d %26.26s %ld\n", pos+i-max_size-pam_size+2, bits_to_string(u, max_size+2*pam_size), u); */
-						seqs[nseqs].pos = pos+i-max_size-pam_size+2;
+						seqs[nseqs].pos = seq_pos;
 						seqs[nseqs].seq = u | PAM_RIGHT;
 						nseqs++;
 						tot_seqs++;
