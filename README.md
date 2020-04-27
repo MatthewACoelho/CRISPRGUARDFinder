@@ -89,7 +89,11 @@ Activate the environment, if required:
 source activate $guard_root/ext
 ```
 
-alternatively make sure an environment variable `guard_root` is set appropriately and R and nextflow are in your `PATH`.
+make sure an environment variable `guard_root` is set appropriately and R and nextflow are in your `PATH`.
+
+```
+export guard_root = $PATH/guard_root
+```
 
 Create a directory for the run, and within it a  `params.nf` file like:
 
