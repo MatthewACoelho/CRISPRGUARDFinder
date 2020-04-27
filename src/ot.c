@@ -81,6 +81,7 @@ typedef enum cut_region_e { NONCODING = 0, CODING = 1 } cut_region_e;
 double priors[MAX_SIZE] = {0.79, 0.415, 0.45, 0.64, 0.66, 0.695, 0.67, 0.64, 0.3, 0.26,
 						   0.25, 0.3, 0.245, 0.01, 0.12, 0.11, 0.07, 0.06, 0.09, 0.065};
 
+#define uint64_t old_uint64_t
 typedef unsigned long int uint64_t;
 typedef unsigned int uint32_t;
 typedef unsigned short int uint16_t;
@@ -140,7 +141,7 @@ typedef struct search_data_t
 	int			max_size;
 	pam_e		pam;
 	info_t		*info;
-	int			mismatches[MAX_SIZE+1];
+	uint32_t	mismatches[MAX_SIZE+1];
 	int			off_targets;
 } search_data_t;
 
@@ -601,7 +602,7 @@ void record_match_prob(int query_no, cut_region_e cut_region, double p)
 int search(int query_no, uint64_t query, int query_size,
 		   char *name, int num_seqs, entry_t *seqs, int max_size, pam_e pam,
 		   info_t *info,
-		   int max_mismatches, int *mismatches)
+		   int max_mismatches, uint32_t *mismatches)
 {
 	int off_targets = 0;
 	int j;
@@ -748,6 +749,7 @@ void *search_thread(void *p)
 		   					d->name, d->nseqs, d->seqs, d->max_size, d->pam,
 		   					d->max_mismatches, d->mismatches);
 */
+	return (NULL);
 }
 
 void init_threads()
@@ -760,7 +762,7 @@ void init_threads()
 	}
 }
 
-void join_data(int thread_no, int *off_targets, int *mismatches)
+void join_data(int thread_no, uint32_t *off_targets, uint32_t *mismatches)
 {
 	int index_no = search_data[thread_no].index_no;
 	off_targets[index_no] += search_data[thread_no].off_targets;
@@ -772,7 +774,7 @@ void join_data(int thread_no, int *off_targets, int *mismatches)
 	search_data[thread_no].is_free = TRUE;
 }
 
-void join_threads(int nthreads, uint32_t *off_targets, int *mismatches)
+void join_threads(int nthreads, uint32_t *off_targets, uint32_t *mismatches)
 {
 	int thread_no;
 	for(thread_no = 0; thread_no < nthreads; thread_no++)
@@ -788,7 +790,7 @@ void join_threads(int nthreads, uint32_t *off_targets, int *mismatches)
 	}
 }
 
-int find_thread(int nthreads, uint32_t *off_targets, int *mismatches)
+int find_thread(int nthreads, uint32_t *off_targets, uint32_t *mismatches)
 {
 	int thread_no = nthreads+1;
 	while (thread_no >= nthreads)
@@ -802,7 +804,11 @@ int find_thread(int nthreads, uint32_t *off_targets, int *mismatches)
 		}
 		for(thread_no = 0; thread_no < nthreads; thread_no++)
 		{
+#ifdef __USE_GNU
 			if (pthread_tryjoin_np(threads[thread_no], NULL) == 0)
+#else
+			if (pthread_join(threads[thread_no], NULL) == 0)
+#endif
 			{
 				join_data(thread_no, off_targets, mismatches);
 			}
@@ -822,7 +828,7 @@ void create_thread(int thread_no, search_data_t *d)
 }
 
 void search_index(int index_no, FILE *fp, char *chr,
-				  int *mismatches, uint32_t *index_off_targets,
+				  uint32_t *mismatches, uint32_t *index_off_targets,
 				  int nthreads, pam_e pam,
 				  info_t *info)
 {
@@ -1175,7 +1181,7 @@ pam_e string_to_pam(char *s)
 
 	else
 	{
-		fprintf(stderr, "# %s: unimplemented PAM\n", prog, s);
+		fprintf(stderr, "# %s: unimplemented PAM (%s)\n", prog, s);
 		exit(1);
 	}
 }
@@ -1227,7 +1233,7 @@ void index_file(FILE *fp, char *out_dir, int max_size, pam_e pam)
 	uint64_t all_mask = 0xFFFFFFFFFFFFFFFFull >> (64 - 2*(max_size+pam_size-1));
 
 	name[0] = '\0';
-	while (line = fgets(buffer, MAX_BUFF, fp))
+	while ((line = fgets(buffer, MAX_BUFF, fp)))
 	{
 		size_t len = strlen(line);
 		line[--len] = '\0';
@@ -1450,6 +1456,7 @@ int index_main(int argc, char *argv[])
 	{
 		usage();
 	}
+	return (0);
 }
 
 info_t *read_info(char *info_dir, char *index_file, char *chr)
@@ -1724,7 +1731,7 @@ int query_main(int argc, char *argv[])
 			}
 
 			char *s, chr[MAX_BUFF];
-			if (s = strrchr(arg, '/'))
+			if ((s = strrchr(arg, '/')))
 			{
 				strcpy(chr, s+1);
 			}
@@ -1849,6 +1856,7 @@ int query_main(int argc, char *argv[])
 		usage(prog);
 	}
 	*/
+	return (0);
 }
 
 int region_main(int argc, char *argv[])
@@ -2076,6 +2084,7 @@ int region_main(int argc, char *argv[])
 	{
 		usage();
 	}
+	return (0);
 }
 
 int main(int argc, char *argv[])
