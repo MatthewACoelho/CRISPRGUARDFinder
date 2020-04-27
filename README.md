@@ -48,7 +48,7 @@ Download the genome fasta file and GTF from Ensembl for each organism in which y
 
 ```
 curl http://ftp.ensembl.org/pub/current_fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.toplevel.fa.gz > $guard_root/data/hg38.fa.gz
-curl http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.96.chr.gtf.gz > $guard_root/data/hg38.gtf.gz
+curl http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.99.chr.gtf.gz > $guard_root/data/hg38.gtf.gz
 ```
 
 and Mouse:
