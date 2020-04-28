@@ -24,7 +24,7 @@ The pipeline requires R with `optparse`  and `BSgenome` packages for each of the
 
 ```
 conda create --prefix $guard_root/ext
-source activate $guard_root/ext
+source activate $guard_root/ext #(conda activate $guard_root/ext)
 
 conda install -c r r-base #(conda install -c conda-forge r=3.3.2)
 conda install -c bioconda bioconductor-bsgenome.hsapiens.ucsc.hg38
@@ -32,7 +32,7 @@ conda install -c bioconda bioconductor-bsgenome.mmusculus.ucsc.mm10
 conda install -c bioconda r-optparse
 conda install -c bioconda nextflow
 
-source deactivate
+source deactivate #(conda deactivate)
 ```
 
 The off-target search is a C program requiring 64-bit architecture, which can be compiled as follows (only tested on Centos 7).
