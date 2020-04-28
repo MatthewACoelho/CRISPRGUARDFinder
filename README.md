@@ -79,6 +79,8 @@ To convert an Ensembl GTF into the format required by the off-target search (whi
 ```
 mkdir -p $guard_root/data/$genome/info
 gunzip $guard_root/data/$genome.gtf.gz
+# make process_gtf.pl executable 
+chmod +x process_gtf.pl
 $guard_root/bin/process_gtf.pl $guard_root/data/$genome/info < $guard_root/data/$genome.gtf
 ```
 
