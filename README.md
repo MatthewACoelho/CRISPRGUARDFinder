@@ -38,11 +38,11 @@ conda install -c bioconda nextflow
 #When asked to update other packages, all, some, none - say NONE
 
 R
-install.packages("optparse")
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
 BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
+install.packages("optparse")
 quit()
 
 #deactivate the environment
