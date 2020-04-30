@@ -10,29 +10,43 @@ The tool incorporates an off-target search based on the one used in the Sanger W
 4. [Repurposing CRISPR as an RNA-guided platform for sequence-specific control of gene expression.  - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/23452860)
 
 ## Installation
-Create a new directory for the installation which I will denote `$guard_root` in what follows.
+Create a new directory for the installation which I will denote `guard_root` in what follows.
 
 Clone out the GitHub repo:
 
 ```
-cd $guard_root
-
+mkdir guard_root
+cd guard_root
 git clone https://github.com/MatthewACoelho/GUARDfinder.git .
 ```
 
 The pipeline requires R with `optparse`  and `BSgenome` packages for each of the genomes required, and `nextflow`. One way to get these if you don’t already have them is using `conda`:
 
 ```
-conda create --prefix $guard_root/ext
-source activate $guard_root/ext #(conda activate $guard_root/ext)
+conda create --prefix guard_root/ext
+conda activate guard_root/ext
 
-conda install -c r r-base #(conda install -c conda-forge r=3.3.2)
-conda install -c bioconda bioconductor-bsgenome.hsapiens.ucsc.hg38
+#install R version 3.3.2
+conda config --add channels conda-forge
+conda config --set channel_priority strict
+conda install -c conda-forge r=3.3.2
 conda install -c bioconda bioconductor-bsgenome.mmusculus.ucsc.mm10
 conda install -c bioconda r-optparse
 conda install -c bioconda nextflow
 
-source deactivate #(conda deactivate)
+#Open R to install BSgenome for human, and update optparse
+#When asked to update other packages, all, some, none - say NONE
+
+R
+install.packages("optparse")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
+quit()
+
+#deactivate the environment
+conda deactivate
 ```
 
 The off-target search is a C program requiring 64-bit architecture, which can be compiled as follows (only tested on Centos 7).
@@ -47,57 +61,72 @@ The genome-related files and indexes are too large to include here, so before yo
 Download the genome fasta file and GTF from Ensembl for each organism in which you are interested. For example Human:
 
 ```
-curl http://ftp.ensembl.org/pub/current_fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.toplevel.fa.gz > $guard_root/data/hg38.fa.gz
-curl http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.99.chr.gtf.gz > $guard_root/data/hg38.gtf.gz
+curl http://ftp.ensembl.org/pub/current_fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.toplevel.fa.gz > guard_root/data/hg38.fa.gz
+curl http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.99.chr.gtf.gz > guard_root/data/hg38.gtf.gz
 ```
 
 and Mouse:
 
 ```
-curl http://ftp.ensembl.org/pub/current_fasta/mus_musculus/dna/Mus_musculus.GRCm38.dna.toplevel.fa.gz > $guard_root/data/mm10.fa.gz
-curl http://ftp.ensembl.org/pub/current_gtf/mus_musculus/Mus_musculus.GRCm38.96.gtf.gz > $guard_root/data/mm10.gtf.gz
+curl http://ftp.ensembl.org/pub/current_fasta/mus_musculus/dna/Mus_musculus.GRCm38.dna.toplevel.fa.gz > guard_root/data/mm10.fa.gz
+curl http://ftp.ensembl.org/pub/current_gtf/mus_musculus/Mus_musculus.GRCm38.96.gtf.gz > guard_root/data/mm10.gtf.gz
 ```
 
 To create an off-target index for a genome `$genome` for PAM `$pam`:
 
 ```
-mkdir -p $guard_root/data/$genome/$pam
-gunzip $guard_root/data/$genome.fa.gz
-$guard_root/bin/ot index -out $guard_root/data/$genome/$pam -pam $pam $guard_root/data/$genome.fa
+mkdir -p guard_root/data/$genome/$pam
+gunzip guard_root/data/$genome.fa.gz
+guard_root/bin/ot index -out guard_root/data/$genome/$pam -pam $pam guard_root/data/$genome.fa
 ```
 
 You can remove some of the indexes to reduce noise in the results, we normally only keep the major chromosome indexes:
 
 ```
-rm $guard_root/data/$genome/$pam/chrCHR*
-rm $guard_root/data/$genome/$pam/chrGL*
-rm $guard_root/data/$genome/$pam/chrK*
+rm guard_root/data/$genome/$pam/chrCHR*
+rm guard_root/data/$genome/$pam/chrGL*
+rm guard_root/data/$genome/$pam/chrK*
 ```
 
 To convert an Ensembl GTF into the format required by the off-target search (which requires perl):
 
 ```
-mkdir -p $guard_root/data/$genome/info
-gunzip $guard_root/data/$genome.gtf.gz
-# make process_gtf.pl executable 
-chmod +x process_gtf.pl
-$guard_root/bin/process_gtf.pl $guard_root/data/$genome/info < $guard_root/data/$genome.gtf
+mkdir -p guard_root/data/$genome/info
+gunzip guard_root/data/$genome.gtf.gz
+
+# make scripts executable
+chmod +x bin/process_gtf.pl
+chmod +x bin/find_guards.sh
+chmod +x bin/find_guards.R
+chmod +x bin/find_guards.nf
+chmod +x bin/local.nf
+chmod +x bin/slurm.nf
+
+guard_root/bin/process_gtf.pl guard_root/data/$genome/info < guard_root/data/$genome.gtf
 ```
 
 ## Usage
-Activate the environment, if required:
+Activate the environment:
 
 ```
-source activate $guard_root/ext
+conda activate guard_root/ext
 ```
 
-make sure an environment variable `guard_root` is set appropriately and R and nextflow are in your `PATH`.
+if required, make sure an environment variable `guard_root` is set appropriately and R and nextflow are in your `$PATH`.
+if required and env not set correctly, the error will be "no guard_root"
 
 ```
-export guard_root = $PATH/guard_root
+export guard_root=$PATH/guard_root
 ```
 
-Create a directory for the run, and within it a  `params.nf` file like:
+Create a directory for the run, called `results`
+
+```
+mkdir results
+cd results
+```
+
+and within it, make a  `params.nf` file like:
 
 ```
 params {
@@ -136,16 +165,16 @@ params {
 }
 ```
 
-In the same directory run:
+In the results directory, run:
 
 ```
-$guard_root/bin/find_guards.sh
+guard_root/bin/find_guards.sh
 ```
 
 which will run the process locally, or:
 
 ```
-$guard_root/bin/find_guards.sh --submit
+guard_root/bin/find_guards.sh --submit
 ```
 
 which will submit jobs to slurm.
