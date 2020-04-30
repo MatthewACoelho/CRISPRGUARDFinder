@@ -33,10 +33,8 @@ conda install -c conda-forge r=3.3.2
 conda install -c bioconda bioconductor-bsgenome.mmusculus.ucsc.mm10
 conda install -c bioconda r-optparse
 conda install -c bioconda nextflow
-
 #Open R to install BSgenome for human, and update optparse
 #When asked to update other packages, all, some, none - say NONE
-
 R
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
@@ -44,7 +42,6 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
 install.packages("optparse")
 quit()
-
 #deactivate the environment
 conda deactivate
 ```
@@ -56,7 +53,7 @@ gcc -mcmodel=medium -O4 -o bin/ot -pthread src/ot.c
 ```
 
 ## Genomes
-The genome-related files and indexes are too large to include here, so before you can run the tool you will need to generate them.
+The genome-related files and indexes are too large to include here, so before you can run the tool you will need to generate them. Please note that these url sources will change, so substitute with the new release link appropriately.
 
 Download the genome fasta file and GTF from Ensembl for each organism in which you are interested. For example Human:
 
