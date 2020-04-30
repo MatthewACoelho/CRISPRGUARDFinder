@@ -110,10 +110,15 @@ conda activate guard_root/ext
 ```
 
 if required, make sure an environment variable `guard_root` is set appropriately and R and nextflow are in your `$PATH`.
-if required and env not set correctly, the error will be "no guard_root"
+if required and env not set correctly, the error will be "Fatal No guard_root"
 
 ```
 export guard_root=$PATH/guard_root
+```
+For example:
+
+```
+export guard_root=/Users/your-username/guard_root
 ```
 
 Create a directory for the run, called `results`
