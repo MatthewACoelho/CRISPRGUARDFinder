@@ -26,21 +26,19 @@ The pipeline requires R with `optparse`  and `BSgenome` packages for each of the
 conda create --prefix guard_root/ext
 conda activate guard_root/ext
 
-#install R version 3.3.2
+#install R version 4
 conda config --add channels conda-forge
 conda config --set channel_priority strict
-conda install -c conda-forge r=3.3.2
+conda install -c conda-forge r-base
 conda install -c bioconda bioconductor-bsgenome.mmusculus.ucsc.mm10
-conda install -c bioconda r-optparse
 conda install -c bioconda nextflow
-#Open R to install BSgenome for human, and update optparse
-#When asked to update other packages, all, some, none - say NONE
+#Open R to install BSgenome for human, and optparse
+#When asked to update other packages, all/some/none - select "none"
 R
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-
 BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
-install.packages("optparse")
+BiocManager::install("optparse")
 quit()
 #deactivate the environment
 conda deactivate
