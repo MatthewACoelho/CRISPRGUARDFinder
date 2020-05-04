@@ -1,0 +1,15 @@
+params {
+id = "HBB"
+guide = "CTTGCCCCACAGGGCAGTAA"
+genome = "hg38"
+pam = "NGG"
+guide_mismatches = "3"
+guide_min_pvalue = "0.1"
+guard_length = "15"
+guard_mismatches = "2"
+max_guard_distance = "10"
+chr = ""
+start = ""
+end = ""
+strand = ""
+}
