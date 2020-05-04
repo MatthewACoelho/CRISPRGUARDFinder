@@ -20,19 +20,19 @@ cd guard_root
 git clone https://github.com/MatthewACoelho/GUARDfinder.git .
 ```
 
-The pipeline requires R with `optparse`  and `BSgenome` packages for each of the genomes required, and `nextflow`. One way to get these if you don’t already have them is using `conda`:
+The pipeline requires R (version 4.0.0) with `optparse` (version 1.6.6)  and `BSgenome` (version 1.56.0) packages for each of the genomes required, and `nextflow` (version 20.01.0). One way to get these if you don’t already have them is using `conda`:
 
 ```
 conda create --prefix guard_root/ext
 conda activate guard_root/ext
 
-#install R version 4
+#install R
 conda config --add channels conda-forge
 conda config --set channel_priority strict
 conda install -c conda-forge r-base
 conda install -c bioconda bioconductor-bsgenome.mmusculus.ucsc.mm10
 conda install -c bioconda nextflow
-#Open R to install BSgenome for human, and optparse
+#Open R to install BSgenome for human (version1.4.3), and optparse
 #When asked to update other packages, all/some/none - select "none"
 R
 if (!requireNamespace("BiocManager", quietly = TRUE))
