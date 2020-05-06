@@ -16,7 +16,7 @@ ui <- fluidPage(
     em("CRISPR GUARD is a tool to reduce off-target editing by Cas9 and base editors.",
        p("Short guide RNAs called \"GUARD RNAs\" recruit Cas9 complexes to off-target sites but do not permit nuclease activty, 
          thereby protecting them from the mismatched guide RNA by direct competition.", 
-         p("The GUARD Finder tool searches for guide RNA off-targets and designs GUARD RNAs to protect them from editing."
+         p("The CRISPR GUARD Finder tool searches for guide RNA off-targets and designs GUARD RNAs to protect them from editing."
            )
          )
        ),
@@ -36,12 +36,9 @@ ui <- fluidPage(
                   label = "maximum number of mismatches for the guide off-target search", 
                   value = 3, min = 0, max = 5),
         selectInput("guide_min_pvalue",
-                  "p value filter for which off-targets to take forward to GUARD RNA design", c("0.1", "0.05", "0.01")),
+                  "probability threshold for off-targets to take forward to GUARD RNA design", c("0.1", "0.05", "0.01")),
         selectInput("guard_length",
                     "GUARD RNA length", c("15", "14")),
-        sliderInput(inputId = "guard_mismatches",
-                    label = "maximum number of mismatches for the GUARD RNA off-target search",
-                    value = 2, min = 0, max = 2),
         sliderInput(inputId = "max_guard_distance", 
         label = "maximum distance between the off-target and GUARD RNA binding",
         value = 10, min = 0, max = 15),
@@ -69,6 +66,7 @@ ui <- fluidPage(
             #print parameters
             br(),
             textOutput("parameters"),
+            hr(),
             
             #results
             DT::dataTableOutput("results"),
@@ -76,7 +74,7 @@ ui <- fluidPage(
             #MIT license etc with footnotes
             br(),
             hr(),
-            h5("please cite: Coelho et al., CRISPR GUARD: short guide RNAs protect off target sites from Cas9 nuclease activity, Nature Communications, 2020"),
+            h5("please cite: Coelho et al., CRISPR GUARD: short guide RNAs protect off-target sites from Cas9 nuclease activity, Nature Communications, 2020"),
             a("GUARD Finder GitHub", href = "https://github.com/MatthewACoelho/GUARDfinder"),
             hr(),
             h5("License"),
@@ -102,7 +100,7 @@ server <- function(input, output) {
           "guide_mismatches = ", "\"", input$guide_mismatches,"\"", "\n",
           "guide_min_pvalue = ", "\"", input$guide_min_pvalue,"\"", "\n",
           "guard_length = ", "\"", input$guard_length,"\"", "\n",
-          "guard_mismatches = ", "\"", input$guard_mismatches,"\"", "\n",
+          "guard_mismatches = ", "\"", "2","\"", "\n",
           "max_guard_distance = ", "\"", input$max_guard_distance,"\"", "\n",
           "chr = ", "\"", input$chr,"\"", "\n",
           "start = ", "\"", input$start,"\"", "\n",
@@ -120,7 +118,9 @@ server <- function(input, output) {
         if (file.exists("params.nf"))
             system("/Users/mc32/guard_root/bin/find_guards.sh", intern=TRUE)
             results_filename <- print(paste(c(input$id, "_final.txt"), collapse = ""))
-            if (file.exists(results_filename))
+                validate(
+                        need(file.exists(results_filename), "no results for this gRNA query ... please relax search criteria")
+                        )
                 data <- as_tibble(read.delim(file = results_filename, header = TRUE, sep = "\t"))
                 data <- data %>% mutate(OffTarget=OffGuide, GuardOffTargets0Mismatch=X0, GuardOffTargets1Mismatch=X1, GuardOffTargets2Mismatch=X2)
                 data <- data %>% select("OffTarget","ID", "OffGuideStrand", "Guard", "GuardGC", "GuardStrand",
