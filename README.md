@@ -183,7 +183,7 @@ In both cases the script will pick up cached results if they exist, so add `--fo
 When complete you should have a text file named `id_final.txt`, e.g. `VEGFA_final.txt`.
 
 ## Shiny app
-We have developed a Shiny app for ease of use with user inputs for parameters to aviod making a parameter file manually for each query. This will call the scripts and give results dataframes with a results download link.
+We have developed a Shiny app for ease of use with user inputs for parameters to avoid making a parameter file manually for each query. This will call the scripts and give results dataframes with a results download link.
 
 ## Output
 The output is a tab-delimited text file with the following columns:
