@@ -44,7 +44,7 @@ quit()
 conda deactivate
 ```
 
-The off-target search is a C program requiring 64-bit architecture, which can be compiled as follows (only tested on Centos 7).
+The off-target search is a C program requiring 64-bit architecture, which can be compiled as follows:
 
 ```
 gcc -mcmodel=medium -O4 -o bin/ot -pthread src/ot.c
@@ -52,7 +52,6 @@ gcc -mcmodel=medium -O4 -o bin/ot -pthread src/ot.c
 
 ## Genomes
 The genome-related files and indexes are too large to include here, so before you can run the tool you will need to generate them. Please note that these url sources will change, so substitute with the new release link appropriately.
-
 Download the genome fasta file and GTF from Ensembl for each organism in which you are interested. For example Human:
 
 ```
@@ -182,6 +181,9 @@ which will submit jobs to slurm.
 In both cases the script will pick up cached results if they exist, so add `--force` to force recalculation.
 
 When complete you should have a text file named `id_final.txt`, e.g. `VEGFA_final.txt`.
+
+## Shiny app
+We have developed a Shiny app for ease of use with user inputs for parameters to aviod making a parameter file manually for each query. This will call the scripts and give results dataframes with a results download link.
 
 ## Output
 The output is a tab-delimited text file with the following columns:
