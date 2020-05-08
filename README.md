@@ -17,7 +17,7 @@ Clone out the GitHub repo:
 ```
 mkdir guard_root
 cd guard_root
-git clone https://github.com/MatthewACoelho/GUARDfinder.git .
+git clone https://github.com/MatthewACoelho/CRISPRGUARDfinder.git .
 ```
 
 The pipeline requires R (version 4.0.0) with `optparse` (version 1.6.6)  and `BSgenome` (version 1.56.0) packages for each of the genomes required, and `nextflow` (version 20.01.0). One way to get these if you don’t already have them is using `conda`:
