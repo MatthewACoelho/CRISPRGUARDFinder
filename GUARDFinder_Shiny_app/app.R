@@ -6,6 +6,9 @@ library(shiny)
 library(DT)
 library(tidyverse)
 
+nucleotides <- c("A", "a", "C", "c", "T", "t", "G", "g")
+special_chars <- c("\\/", "\\*", "\\,", "\\\\", "\\-", " ", "\\^", "\\|", "\\>")
+
 # Define UI for application
 ui <- fluidPage(
     hr(),
@@ -33,21 +36,21 @@ ui <- fluidPage(
         selectInput("pam",
                   "PAM", c("NGG")),
         sliderInput(inputId = "guide_mismatches",
-                  label = "maximum number of mismatches for the guide off-target search", 
+                  label = "mismatches for the guide RNA off-target search", 
                   value = 3, min = 0, max = 5),
         selectInput("guide_min_pvalue",
-                  "probability threshold for off-targets to take forward to GUARD RNA design", c("0.1", "0.05", "0.01")),
+                  "probability threshold for the guide RNA off-target search (e.g. 0.1 = 10 % likely)", c("0.1", "0.05", "0.01")),
         selectInput("guard_length",
-                    "GUARD RNA length", c("15", "14")),
+                    "GUARD RNA length (nt)", c("15", "14")),
         sliderInput(inputId = "max_guard_distance", 
-        label = "maximum distance between the off-target and GUARD RNA binding",
+        label = "distance between GUARD RNA and off-target (bp)",
         value = 10, min = 0, max = 15),
         actionButton(inputId = "submit", label = "submit job"),
         hr(),
-        downloadButton("downloadData", "Download results"),
+        downloadButton("downloadData", "download results"),
         hr(),
         textInput("chr",
-                  "Special case: If your guide RNA maps perfectly to more than one genomic position, please specify the intended on-target locus: chr e.g. chr4"),
+                  "special case: If your guide RNA maps perfectly to more than one genomic position, please specify the intended on-target locus: chr e.g. chr4"),
         textInput("start",
                   "start"),
         textInput("end",
@@ -92,6 +95,12 @@ server <- function(input, output) {
     
     #make the params.nf file from input fields 
     parameters <- eventReactive(input$submit, {
+        
+        # taint-check text input. guide should be 19 or 20 nucleotides ATGC only. id should be <20 chars with no special chars
+        validate(
+                need(str_length(input$guide) == 19 | str_length(input$guide) == 20 & str_length(input$guide) == sum(str_count(input$guide, nucleotides)), "invalid guide RNA input. 19 or 20 nt"),
+                need(str_length(input$id) < 20 & sum(str_count(input$id, special_chars)) == 0, "invalid guide RNA name. please remove special characters or reduce length")
+                )
         params <- print(paste(c("params {", "\n",
           "id = ", "\"", input$id, "\"", "\n",
           "guide = ", "\"", input$guide,"\"", "\n",
