@@ -184,7 +184,7 @@ When complete you should have a text file named `id_final.txt`, e.g. `VEGFA_fina
 
 ## Shiny app
 We have developed a Shiny app for ease of use with user inputs for parameters to avoid making a parameter file manually for each query. 
-The Shiny app requires further installation of the R packages "shiny" (version 1.4.0.2), "tidyverse" (version 1.3.0) and "DT" (version. 0.13), which can be installed in R with 'install.packages("package_name")'.
+The Shiny app requires further installation of the R packages "shiny" (version 1.4.0.2), "tidyverse" (version 1.3.0), "digest" (version 0.6.25) and "DT" (version. 0.13), which can be installed in R with 'install.packages("package_name")'.
 The app calls the scripts from your '/guard_root/bin' directory and generates results dataframes and a results download link.
 
 ## Output
