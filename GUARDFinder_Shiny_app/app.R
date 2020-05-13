@@ -5,6 +5,7 @@
 library(shiny)
 library(DT)
 library(tidyverse)
+library(digest)
 
 nucleotides <- c("A", "a", "C", "c", "T", "t", "G", "g")
 special_chars <- c("\\/", "\\*", "\\,", "\\\\", "\\-", " ", "\\^", "\\|", "\\>")
@@ -30,7 +31,7 @@ ui <- fluidPage(
             textInput("id",
                         "guide RNA name (e.g. HBB)"),
         textInput("guide",
-                  "guide RNA sequence without PAM (e.g. CTTGCCCCACAGGGCAGTAA"),
+                  "guide RNA sequence without PAM (e.g. CTTGCCCCACAGGGCAGTAA)"),
         selectInput("genome",
                   "genome version - human", c("hg38")),
         selectInput("pam",
@@ -116,6 +117,10 @@ server <- function(input, output) {
           "end = ", "\"", input$end,"\"", "\n",
           "strand = ", "\"", input$strand,"\"", "\n",
           "}"), collapse=""))
+    folder_id <- sha1(params)
+    path <- paste0(getwd(), "/", folder_id)
+    dir.create(path)
+    setwd(path)
     write(params, file ="params.nf")
     print(params)
     })
