@@ -78,8 +78,10 @@ ui <- fluidPage(
             #MIT license etc with footnotes
             br(),
             hr(),
-            h5("please cite: Coelho et al., CRISPR GUARD: short guide RNAs protect off-target sites from Cas9 nuclease activity, Nature Communications, 2020"),
-            a("GUARD Finder GitHub", href = "https://github.com/MatthewACoelho/GUARDfinder"),
+            h5("please cite: Coelho et al., CRISPR GUARD: short guide RNAs protect off-target sites from Cas9 nuclease activity, 2020"),
+            a("publication", href = " "),
+            br(),
+            a("CRISPR GUARD Finder GitHub", href = "https://github.com/MatthewACoelho/CRISPRGUARDFinder"),
             hr(),
             h5("License"),
             h6("Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
