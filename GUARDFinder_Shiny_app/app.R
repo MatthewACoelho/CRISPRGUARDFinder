@@ -40,7 +40,7 @@ ui <- fluidPage(
                   label = "mismatches for the guide RNA off-target search", 
                   value = 3, min = 0, max = 5),
         selectInput("guide_min_pvalue",
-                  "probability threshold for the guide RNA off-target search (e.g. 0.1 = 10 % likely)", c("0.1", "0.05", "0.01")),
+                  "probability confidence threshold for the guide RNA off-target search", c("0.1", "0.05", "0.01")),
         selectInput("guard_length",
                     "GUARD RNA length (nt)", c("15", "14")),
         sliderInput(inputId = "max_guard_distance", 
