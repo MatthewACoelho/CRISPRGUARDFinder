@@ -102,7 +102,10 @@ server <- function(input, output) {
         # taint-check text input. guide should be 19 or 20 nucleotides ATGC only. id should be <20 chars with no special chars
         validate(
                 need(str_length(input$guide) == 19 | str_length(input$guide) == 20 & str_length(input$guide) == sum(str_count(input$guide, nucleotides)), "invalid guide RNA input. 19 or 20 nt"),
-                need(str_length(input$id) < 20 & sum(str_count(input$id, special_chars)) == 0, "invalid guide RNA name. please remove special characters or reduce length")
+                need(str_length(input$id) < 20 & sum(str_count(input$id, special_chars)) == 0, "invalid guide RNA name. please remove special characters or reduce length"),
+                need(str_length(input$id) < 20 & sum(str_count(input$chr, special_chars)) == 0, "invalid chr. please remove special characters or reduce length"),
+                need(str_length(input$id) < 20 & sum(str_count(input$start, special_chars)) == 0, "invalid start. please remove special characters or reduce length"),
+                need(str_length(input$id) < 20 & sum(str_count(input$end, special_chars)) == 0, "invalid stop. please remove special characters or reduce length")
                 )
         params <- print(paste(c("params {", "\n",
           "id = ", "\"", input$id, "\"", "\n",
