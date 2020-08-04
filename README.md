@@ -1,5 +1,10 @@
 # CRISPR GUARD Finder
 ## Introduction
+
+Publication:
+Coelho et al., CRISPR GUARD protects off-target sites from Cas9 nuclease activity using short guide RNAs. Nature Communications (2020).
+https://doi.org/10.1038/s41467-020-17952-5
+
 About:
 https://www.sanger.ac.uk/tool/crispr-guard-finder/
 
@@ -10,7 +15,8 @@ Given an on-target CRISPR guide this tool will identify all of its off-targets a
 
 The tool incorporates an off-target search based on the one used in the Sanger WGE website [2, 3] enhanced with the calculation of the probability of the off-target [4]. R is used to identify and score the GUARD designs, and the whole is coordinated by a nextflow script.
 
-1. Coelho et al, in preparation
+1. Coelho et al., CRISPR GUARD protects off-target sites from Cas9 nuclease activity using short guide RNAs. Nature Communications (2020).
+https://doi.org/10.1038/s41467-020-17952-5 
 2. [WGE: a CRISPR database for genome engineering.  - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/25979474)
 3. [WTSI Genome Editing](https://www.sanger.ac.uk/htgt/wge/)
 4. [Repurposing CRISPR as an RNA-guided platform for sequence-specific control of gene expression.  - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/23452860)
