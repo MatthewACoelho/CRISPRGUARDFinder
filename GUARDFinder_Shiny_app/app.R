@@ -18,7 +18,7 @@ ui <- fluidPage(
     hr(),
     #description
     em("CRISPR GUARD is a tool to reduce off-target editing by Cas9 and base editors.",
-       p("Short guide RNAs called \"GUARD RNAs\" recruit Cas9 complexes to off-target sites but do not permit nuclease activty, 
+       p("Short guide RNAs called \"GUARD RNAs\" recruit Cas9 complexes to off-target sites but do not permit nuclease activity, 
          thereby protecting them from the mismatched guide RNA by direct competition.", 
          p("The CRISPR GUARD Finder tool searches for guide RNA off-targets and designs GUARD RNAs to protect them from editing."
            )
@@ -78,8 +78,8 @@ ui <- fluidPage(
             #MIT license etc with footnotes
             br(),
             hr(),
-            h5("please cite: Coelho et al., CRISPR GUARD: short guide RNAs protect off-target sites from Cas9 nuclease activity, 2020"),
-            a("publication", href = " "),
+            h5("please cite: Coelho et al., CRISPR GUARD protects off-target sites from Cas9 nuclease activity using short guide RNAs, Nature Communications, 2020"),
+            a("publication", href = "https://doi.org/10.1038/s41467-020-17952-5"),
             br(),
             a("CRISPR GUARD Finder GitHub", href = "https://github.com/MatthewACoelho/CRISPRGUARDFinder"),
             hr(),
