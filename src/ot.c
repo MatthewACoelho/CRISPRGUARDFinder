@@ -616,6 +616,12 @@ int search(int query_no, uint64_t query, int query_size,
 	side_e pam_side = pam_sides[pam];
 	char *query_seq = bits_to_string(query, 0ull, query_size, query_buff);
 
+	if (pam_side == LEFT)
+	{
+		/* Flip query for 5' PAM searches */
+		query = revcom(query, query_size);
+	}
+
 	for(j = 0; j < num_seqs; j++)
 	{
 		uint64_t s = seqs[j].seq;
